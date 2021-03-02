@@ -2,56 +2,39 @@ const express = require('express');
 const app = express();
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
+const mongoose = require('mongoose');
+const {MONGO_URI} = require('./config');
+const routes = require('./routes/routes');
+const PORT = process.env.PORT || 5000;
+
+//BodyParser Middleware
+app.use(express.json());
+
+//connect to MongoDB
+mongoose.connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+})
+    .then(()=> console.log('MongoDB connected'))
+    .catch(err => console.log(err))
 
 const swaggerOptions = {
   swaggerDefinition: {
     info: {
-      title: "Library API",
+      title: "Voluntariado API",
       version: '1.0.0',
     },
   },
-  apis: ["app.js"],
+  apis: ['./routes/routes.js'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-/**
- * @swagger
- * /books:
- *   get:
- *     description: Get all books
- *     responses:
- *       200:
- *         description: Success
- * 
- */
-app.get('/books', (req, res) => {
-  res.send([
-    {
-      id: 1,
-      title: "Harry Potter",
-    }
-  ])
-});
 
-/**
- * @swagger
- * /books:
- *   post:
- *     description: Get all books
- *     parameters:
- *      - name: title
- *        description: title of the book
- *        in: formData
- *        required: true
- *        type: string
- *     responses:
- *       201:
- *         description: Created
- */
-app.post('/books', (req, res) => {
-  res.status(201).send();
-});
 
-app.listen(5000, () => console.log("listening on 5000"));
+//User routes
+app.use('/', routes);
+
+app.listen(PORT, () => console.log(`Server run at port ${PORT}`));
