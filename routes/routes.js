@@ -40,7 +40,7 @@ const client = new MongoClient(MONGO_URI);
  *       tags:
  *       - voluntarios
  *       summary: Adicionar novo voluntario
- *       operationId: postConcelho
+ *       operationId: postVoluntario
  *       consumes:
  *       - application/json
  *       - application/xml
